@@ -15,11 +15,10 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Init {
+        /// The port your application exposes
         #[arg(short, long, default_value_t = 3000)]
         port: u16,
     },
-    /// Initialize Docker files in the current project
-    Init,
     /// Build and start the services in the background
     Up,
     /// Stop and remove the services
