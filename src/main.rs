@@ -1,7 +1,9 @@
 mod detector;
+mod generator;
 
 use clap::{Parser, Subcommand};
 use std::env;
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
@@ -21,16 +23,18 @@ enum Commands {
     Logs,
 }
 
-
-fn main() {
+// The return type is changed here
+fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Init => {
-            let current_dir = env::current_dir().expect("Failed to get current directory");
+            // Use '?' for cleaner error handling
+            let current_dir = env::current_dir()?;
             let project_type = detector::detect_project_type(&current_dir);
 
             println!("Project detected: {:?}", project_type);
+            generator::generate_dockerfile(&project_type)?;
         }
         Commands::Up => {
             println!("Running the 'up' command...");
@@ -42,4 +46,7 @@ fn main() {
             println!("Running the 'logs' command...");
         }
     }
+
+    // Signal that everything finished successfully
+    Ok(())
 }
