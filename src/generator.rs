@@ -18,12 +18,14 @@ struct Service {
 
 pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Result<()> {
     let tera = Tera::new("templates/**/*")?;
-
     let mut context = Context::new();
     context.insert("port", &port);
 
     let template_name = match project_type {
-        ProjectType::Node => "Dockerfile.node.tpl",
+        ProjectType::Node { entry_point } => {
+            context.insert("entry_point", entry_point);
+            "Dockerfile.node.tpl"
+        }
         _ => anyhow::bail!("Unsupported project type for Dockerfile generation"),
     };
 

@@ -10,5 +10,6 @@ COPY . .
 FROM node:20-alpine
 WORKDIR /app
 COPY --from=build /app .
+
 EXPOSE {{ port }}
-CMD ["node", "index.js"]
+CMD ["node", "{{ entry_point }}"]

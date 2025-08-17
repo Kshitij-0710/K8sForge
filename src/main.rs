@@ -30,16 +30,10 @@ enum Commands {
 // The return type is changed here
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-
     match &cli.command {
         Commands::Init { port } => {
             let current_dir = env::current_dir()?;
             let project_type = detector::detect_project_type(&current_dir);
-
-            let service_name = current_dir
-                .file_name()
-                .and_then(|s| s.to_str())
-                .unwrap_or("my-app");
 
             println!("Project detected: {:?}", project_type);
 
