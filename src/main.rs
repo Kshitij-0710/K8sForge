@@ -1,6 +1,6 @@
 mod detector;
 mod generator;
-
+mod docker;
 use clap::{Parser, Subcommand};
 use std::env;
 
@@ -46,14 +46,14 @@ fn main() -> anyhow::Result<()> {
             generator::generate_dockerfile(&project_type, *port)?;
             generator::generate_compose_file(service_name, *port)?;
         }
-        Commands::Up => {
-            println!("Running the 'up' command...");
+         Commands::Up => {
+            docker::up()?;
         }
         Commands::Down => {
-            println!("Running the 'down' command...");
+            docker::down()?;
         }
         Commands::Logs => {
-            println!("Running the 'logs' command...");
+            docker::logs()?;
         }
     }
 
