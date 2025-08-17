@@ -1,7 +1,9 @@
-// src/detector.rs
+use serde::Deserialize;
+use std::fs;
+
 use std::path::Path;
 
-#[derive(Debug)] // Add this to allow printing the enum
+#[derive(Debug)]
 pub enum ProjectType {
     Node { entry_point: String },
     Python,
@@ -15,7 +17,6 @@ struct PackageJson {
 }
 
 fn detect_node_entry_point(path: &Path) -> String {
-    // 1. Check package.json for "main" field
     if let Ok(content) = fs::read_to_string(path.join("package.json")) {
         if let Ok(pkg) = serde_json::from_str::<PackageJson>(&content) {
             if let Some(main_file) = pkg.main {
@@ -25,7 +26,6 @@ fn detect_node_entry_point(path: &Path) -> String {
         }
     }
 
-    // 2. Fallback to checking for common filenames
     for filename in ["server.js", "app.js", "index.js"] {
         if path.join(filename).exists() {
             println!("Found entry point by filename: {}", filename);
@@ -33,7 +33,6 @@ fn detect_node_entry_point(path: &Path) -> String {
         }
     }
 
-    // 3. Default if nothing is found
     "index.js".to_string()
 }
 
