@@ -35,6 +35,7 @@ fn main() -> anyhow::Result<()> {
 
             println!("Project detected: {:?}", project_type);
             generator::generate_dockerfile(&project_type)?;
+            generator::generate_compose_file("my-node-app", 3000)?;
         }
         Commands::Up => {
             println!("Running the 'up' command...");
