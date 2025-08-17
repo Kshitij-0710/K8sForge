@@ -11,8 +11,13 @@ struct Cli {
     command: Commands,
 }
 
+
 #[derive(Subcommand)]
 enum Commands {
+    Init {
+        #[arg(short, long, default_value_t = 3000)]
+        port: u16,
+    },
     /// Initialize Docker files in the current project
     Init,
     /// Build and start the services in the background
@@ -28,14 +33,19 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Init => {
-            // Use '?' for cleaner error handling
+        Commands::Init { port } => {
             let current_dir = env::current_dir()?;
             let project_type = detector::detect_project_type(&current_dir);
 
+            let service_name = current_dir
+                .file_name()
+                .and_then(|s| s.to_str())
+                .unwrap_or("my-app");
+
             println!("Project detected: {:?}", project_type);
-            generator::generate_dockerfile(&project_type)?;
-            generator::generate_compose_file("my-node-app", 3000)?;
+
+            generator::generate_dockerfile(&project_type, *port)?;
+            generator::generate_compose_file(service_name, *port)?;
         }
         Commands::Up => {
             println!("Running the 'up' command...");
