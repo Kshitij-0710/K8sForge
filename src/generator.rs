@@ -16,11 +16,11 @@ struct Service {
     ports: Vec<String>,
 }
 
-pub fn generate_dockerfile(project_type: &ProjectType) -> anyhow::Result<()> {
+pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Result<()> {
     let tera = Tera::new("templates/**/*")?;
 
     let mut context = Context::new();
-    context.insert("port", &3000);
+    context.insert("port", &port);
 
     let template_name = match project_type {
         ProjectType::Node => "Dockerfile.node.tpl",
