@@ -3,6 +3,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use std::fs;
 use tera::{Context, Tera};
+use include_dir::{include_dir, Dir};
 
 #[derive(Serialize)]
 struct Compose {
@@ -15,16 +16,28 @@ struct Service {
     build: String,
     ports: Vec<String>,
 }
+static TEMPLATES_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
 
 pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Result<()> {
-    let tera = Tera::new("templates/**/*")?;
+    let mut tera = Tera::default();
+
+    // Iterate through the embedded directory and add each file to Tera
+    for file in TEMPLATES_DIR.files() {
+        // Get the path as a string
+        let path_str = file.path().to_str().ok_or_else(|| anyhow::anyhow!("Invalid template path"))?;
+        
+        // Use the full path as the template name when adding it
+        tera.add_raw_template(path_str, file.contents_utf8().unwrap())?;
+    }
+
     let mut context = Context::new();
     context.insert("port", &port);
 
+    // Now, use the FULL path when looking for the template
     let template_name = match project_type {
         ProjectType::Node { entry_point } => {
             context.insert("entry_point", entry_point);
-            "Dockerfile.node.tpl"
+            "templates/Dockerfile.node.tpl" 
         }
         _ => anyhow::bail!("Unsupported project type for Dockerfile generation"),
     };
