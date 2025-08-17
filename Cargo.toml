@@ -6,4 +6,6 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.99"
 clap = { version = "4.5.45", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_yaml = "0.9.34"
 tera = "1.20.0"
