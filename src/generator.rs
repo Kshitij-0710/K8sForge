@@ -1,4 +1,3 @@
-// src/generator.rs
 use crate::detector::ProjectType;
 use serde::Serialize;
 use std::collections::BTreeMap;
@@ -62,7 +61,7 @@ pub fn generate_compose_file(service_name: &str, port: u16) -> anyhow::Result<()
         Service {
             build: ".".to_string(),
             ports: vec![format!("{}:{}", port, port)],
-            environment, // <-- ADD THIS
+            environment, 
         },
     );
 
