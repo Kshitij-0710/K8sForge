@@ -1,8 +1,6 @@
-// MODULES: Organize code into logical units (like namespaces)
 mod config {
     use std::collections::HashMap;
 
-    // STRUCTS: Custom data types that group related data together
     #[derive(Debug)]
     pub struct DockerConfig<'a> {
         pub name: &'a str,  // LIFETIMES: 'a ensures this reference lives long enough
@@ -10,7 +8,6 @@ mod config {
         pub ports: Vec<u16>,
     }
 
-    // ENUMS: Type that can be one of several variants (like union types)
     #[derive(Debug)]
     pub enum Command {
         Start,    // Simple variants

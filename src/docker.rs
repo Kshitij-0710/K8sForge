@@ -1,4 +1,3 @@
-// src/docker.rs
 use std::process::{Command, Stdio};
 
 fn run_compose_command(args: &[&str]) -> anyhow::Result<()> {
