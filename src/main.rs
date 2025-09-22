@@ -18,6 +18,10 @@ enum Commands {
         /// The port your application exposes
         #[arg(short, long, default_value_t = 3000)]
         port: u16,
+
+        /// Manually specify the entry point file (e.g., app.py, server.js)
+        #[arg(short = 'e', long)]
+        entry_point: Option<String>,
     },
     /// Build and start the services in the background
     Up,
@@ -32,7 +36,7 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Init { port } => {
+        Commands::Init { port, entry_point } => {
             let current_dir = env::current_dir()?;
             
             let service_name = current_dir
@@ -40,7 +44,8 @@ fn main() -> anyhow::Result<()> {
                 .and_then(|s| s.to_str())
                 .unwrap_or("my-app");
 
-            let project_type = detector::detect_project_type(&current_dir);
+            // Pass the optional entry_point to the detector
+            let project_type = detector::detect_project_type(&current_dir, entry_point.as_deref())?;
             println!("Project detected: {:?}", project_type);
 
             generator::generate_dockerfile(&project_type, *port)?;

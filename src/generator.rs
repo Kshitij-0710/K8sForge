@@ -1,3 +1,4 @@
+// src/generator.rs
 use crate::detector::ProjectType;
 use serde::Serialize;
 use std::collections::BTreeMap;
@@ -15,6 +16,7 @@ struct Compose {
 struct Service {
     build: String,
     ports: Vec<String>,
+    environment: BTreeMap<String, String>, // <-- ADD THIS
 }
 static TEMPLATES_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
 
@@ -30,11 +32,14 @@ pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Res
     let mut context = Context::new();
     context.insert("port", &port);
 
-    // This is the line we are fixing
     let template_name = match project_type {
         ProjectType::Node { entry_point } => {
             context.insert("entry_point", entry_point);
-            "Dockerfile.node.tpl" // REMOVED "templates/" PREFIX
+            "Dockerfile.node.tpl"
+        }
+        ProjectType::Python { entry_point } => {
+            context.insert("entry_point", entry_point);
+            "Dockerfile.python.tpl"
         }
         _ => anyhow::bail!("Unsupported project type for Dockerfile generation"),
     };
@@ -46,13 +51,19 @@ pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Res
     Ok(())
 }
 
+
 pub fn generate_compose_file(service_name: &str, port: u16) -> anyhow::Result<()> {
     let mut services = BTreeMap::new();
+    let mut environment = BTreeMap::new(); // <-- ADD THIS
+    // This makes the --port flag available inside the container as PORT
+    environment.insert("PORT".to_string(), port.to_string()); // <-- ADD THIS
+
     services.insert(
         service_name.to_string(),
         Service {
             build: ".".to_string(),
             ports: vec![format!("{}:{}", port, port)],
+            environment, // <-- ADD THIS
         },
     );
 
