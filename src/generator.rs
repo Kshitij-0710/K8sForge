@@ -16,7 +16,7 @@ struct Compose {
 struct Service {
     build: String,
     ports: Vec<String>,
-    environment: BTreeMap<String, String>, // <-- ADD THIS
+    environment: BTreeMap<String, String>,
 }
 static TEMPLATES_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
 
@@ -54,9 +54,8 @@ pub fn generate_dockerfile(project_type: &ProjectType, port: u16) -> anyhow::Res
 
 pub fn generate_compose_file(service_name: &str, port: u16) -> anyhow::Result<()> {
     let mut services = BTreeMap::new();
-    let mut environment = BTreeMap::new(); // <-- ADD THIS
-    // This makes the --port flag available inside the container as PORT
-    environment.insert("PORT".to_string(), port.to_string()); // <-- ADD THIS
+    let mut environment = BTreeMap::new();
+    environment.insert("PORT".to_string(), port.to_string()); 
 
     services.insert(
         service_name.to_string(),
